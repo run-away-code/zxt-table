@@ -85,12 +85,38 @@ const gridOptions = reactive({
     data: {
       name: "",
       status: "",
+      joinRange: [],
     },
     items: [
       {
         prop: "name",
         label: "姓名",
         span: 6,
+      },
+      {
+        prop: "name",
+        label: "姓名",
+        span: 6,
+      },
+      {
+        prop: "name",
+        label: "姓名",
+        span: 6,
+      },
+      {
+        prop: "name",
+        label: "姓名",
+        span: 6,
+      },
+      {
+        prop: "joinRange",
+        label: "入职日期",
+        span: 12,
+        type: "daterange",
+        dateType: "daterange",
+        startPlaceholder: "开始日期",
+        endPlaceholder: "结束日期",
+        valueFormat: "YYYY-MM-DD",
       },
       {
         prop: "status",

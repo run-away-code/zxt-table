@@ -588,6 +588,7 @@ export default defineComponent({
 
 .grid-search-form {
   padding: 10px;
+  padding-bottom: 6px;
   border-radius: 4px;
 }
 
@@ -599,6 +600,7 @@ export default defineComponent({
 .grid-toolbar {
   margin-bottom: 10px;
   padding: 10px;
+  padding-top: 0px;
   border-radius: 4px;
   display: flex;
   gap: 10px;
