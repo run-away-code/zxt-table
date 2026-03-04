@@ -134,33 +134,49 @@ export default defineComponent({
         "popper-class": "zxt-form-popper",
       };
 
+      let typeProps = {};
+
       // 根据不同类型添加特定属性
       switch (type) {
         case "date":
         case "daterange":
         case "datetime":
         case "datetimerange":
-          return {
-            ...baseProps,
+          typeProps = {
             type: column.dateType || type,
             startPlaceholder: column.startPlaceholder || "开始日期",
             endPlaceholder: column.endPlaceholder || "结束日期",
             format: column.format,
             valueFormat: column.valueFormat,
           };
+          break;
         case "cascader":
-          return {
-            ...baseProps,
+          typeProps = {
             options: column.options,
             props: column.cascaderProps,
             clearable: column.clearable !== false,
           };
-        case "select":
-          return baseProps;
-        case "input":
+          break;
         default:
-          return baseProps;
+          typeProps = {};
       }
+
+      const finalProps = {
+        ...baseProps,
+        ...typeProps,
+      };
+
+      // 透传顶层 clearable 配置（适用于 select、input 等）
+      if ("clearable" in column) {
+        finalProps.clearable = column.clearable;
+      }
+
+      // 透传自定义 props（例如 clearable、filterable 等）
+      if (column.props && typeof column.props === "object") {
+        Object.assign(finalProps, column.props);
+      }
+
+      return finalProps;
     };
 
     // 预处理所有列配置（栅格响应式配置）

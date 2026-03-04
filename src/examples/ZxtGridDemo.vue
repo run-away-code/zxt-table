@@ -97,6 +97,10 @@ const gridOptions = reactive({
         label: "状态",
         span: 6,
         type: "select",
+        clearable: true,
+        props: {
+          clearable: true,
+        },
         options: [
           { label: "全部", value: "" },
           { label: "启用", value: 1 },
@@ -189,7 +193,8 @@ const handleActionClick = ({ code, button, row }) => {
 .zxt-grid-demo {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100%;
+  min-height: 0;
   padding: 20px;
   box-sizing: border-box;
   background-color: #f5f7fa;
@@ -216,12 +221,6 @@ const handleActionClick = ({ code, button, row }) => {
   line-height: 1.6;
 }
 
-.demo-content {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-}
 .demo-content {
   flex: 1;
   min-height: 0;
