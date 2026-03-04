@@ -2,9 +2,10 @@
   <div class="zxt-form-container">
     <el-form
       ref="formRef"
+      v-bind="$attrs"
       :model="formData"
       :rules="formRules"
-      label-width="100px"
+      :label-width="labelWidth"
       class="zxt-form"
     >
       <el-row :gutter="20">
@@ -87,10 +88,12 @@ import { renderFormItem } from "../ZxtTable/rendererManager";
 
 export default defineComponent({
   name: "ZxtForm",
+  inheritAttrs: false,
   props: {
     formColumns: { type: Array, default: () => [] },
     initialFormData: { type: Object, default: () => ({}) },
     rules: { type: Object, default: () => ({}) },
+    labelWidth: { type: String, default: "100px" },
   },
   emits: ["submit", "reset"],
   setup(props, { emit, expose }) {

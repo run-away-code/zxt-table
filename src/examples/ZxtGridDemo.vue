@@ -145,7 +145,7 @@ const gridOptions = reactive({
       actionColumn: {
         maxVisible: 2,
         buttons: [
-          { label: "编辑", type: "primary", code: "edit" },
+          { label: "详情", type: "primary", code: "edit" },
           { label: "删除", type: "danger", code: "delete" },
           { label: "查看", icon: "View", code: "view" },
           { label: "复制", icon: "CopyDocument", code: "copy" },

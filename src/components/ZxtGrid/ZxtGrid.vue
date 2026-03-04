@@ -5,7 +5,7 @@
   >
     <!-- 搜索表单 -->
     <div
-      v-if="gridOptions.formConfig"
+      v-if="gridOptions.formConfig && isFormVisible"
       class="grid-search-form"
     >
       <ZxtForm
@@ -35,9 +35,10 @@
             </el-button>
           </div>
         </template>
-        <!-- 透传其他插槽 -->
+        <!-- 透传表单相关插槽 -->
         <template
-          v-for="(_, name) in $slots"
+          v-for="(_, name) in formFilteredSlots"
+          :key="name"
           #[name]="slotData"
         >
           <slot
@@ -107,9 +108,10 @@
           />
         </template>
 
-        <!-- 透传所有插槽 -->
+        <!-- 透传表格相关插槽 -->
         <template
-          v-for="(_, name) in $slots"
+          v-for="(_, name) in tableFilteredSlots"
+          :key="name"
           #[name]="slotData"
         >
           <slot
@@ -123,7 +125,7 @@
 </template>
 
 <script>
-import { defineComponent, ref, computed, watch, useAttrs } from "vue";
+import { defineComponent, ref, computed, watch, useAttrs, useSlots } from "vue";
 import { ElMessage } from "element-plus";
 import {
   Plus,
@@ -184,13 +186,14 @@ export default defineComponent({
   emits: ["toolbar-click", "action-click", "submit", "reset", "page-change", "size-change"],
   setup(props, { emit, expose }) {
     const attrs = useAttrs();
+    const slots = useSlots();
     const gridRef = ref(null);
-    const formRef = ref(null);
     const searchFormRef = ref(null);
     const currentPage = ref(1);
     const pageSize = ref(10);
-    const internalData = ref([]);
-    const isFormVisible = ref(props.gridOptions.formMode || true);
+    const internalData = ref(null);
+    const isFormVisible = ref(props.gridOptions.formMode !== false);
+    const proxyFormData = ref({});
 
     // 图标组件映射
     const iconMap = {
@@ -256,6 +259,38 @@ export default defineComponent({
       return columns;
     });
 
+    const formSlotNames = computed(() => {
+      const names = new Set(['search-actions']);
+      (searchFormColumns.value || []).forEach(col => {
+        if (col.type === 'slot') {
+          names.add(col.slotName || col.prop);
+        }
+      });
+      return names;
+    });
+
+    const formFilteredSlots = computed(() => {
+      const result = {};
+      for (const name in slots) {
+        if (name === 'search-actions' || name === 'toolbar') continue;
+        if (formSlotNames.value.has(name) || name.startsWith('form-')) {
+          result[name] = slots[name];
+        }
+      }
+      return result;
+    });
+
+    const tableFilteredSlots = computed(() => {
+      const result = {};
+      for (const name in slots) {
+        if (name === 'toolbar') continue;
+        if (!formSlotNames.value.has(name) && !name.startsWith('form-')) {
+          result[name] = slots[name];
+        }
+      }
+      return result;
+    });
+
     // 搜索表单处理
     const handleSearch = () => {
       searchFormRef.value?.submitForm();
@@ -264,16 +299,12 @@ export default defineComponent({
     const handleSearchSubmit = (formData) => {
       // 统一对外只暴露 submit 事件
       emit("submit", formData);
-      
+
       // 如果使用了 proxyConfig，自动触发数据加载
       if (props.gridOptions.proxyConfig) {
-        // 将表单数据存储到 proxyConfig._formData（私有字段，用于内部传递）
-        if (!props.gridOptions.proxyConfig._formData) {
-          props.gridOptions.proxyConfig._formData = {};
-        }
-        // 更新表单数据
-        Object.assign(props.gridOptions.proxyConfig._formData, formData);
-        
+        // 将表单数据存储到本地状态，透传给 ZxtTable
+        proxyFormData.value = { ...formData };
+
         // 重置到第一页并重新加载数据
         currentPage.value = 1;
         gridRef.value?.reload?.();
@@ -287,14 +318,12 @@ export default defineComponent({
     const handleSearchReset = () => {
       // 统一对外只暴露 reset 事件
       emit("reset");
-      
+
       // 如果使用了 proxyConfig，清除表单数据并重新加载数据
       if (props.gridOptions.proxyConfig) {
         // 清除表单数据
-        if (props.gridOptions.proxyConfig._formData) {
-          props.gridOptions.proxyConfig._formData = {};
-        }
-        
+        proxyFormData.value = {};
+
         // 重置到第一页并重新加载数据
         currentPage.value = 1;
         gridRef.value?.reload?.();
@@ -312,6 +341,16 @@ export default defineComponent({
       return iconMap[iconName];
     };
 
+    // 计算透传给 ZxtTable 的 proxyConfig（附加表单数据）
+    const resolvedProxyConfig = computed(() => {
+      const cfg = props.gridOptions.proxyConfig;
+      if (!cfg) return null;
+      return {
+        ...cfg,
+        _formData: proxyFormData.value,
+      };
+    });
+
     // 计算透传给 ZxtTable 的属性
     const tableProps = computed(() => {
       const {
@@ -321,20 +360,32 @@ export default defineComponent({
         formColumns,
         rules,
         data,
+        proxyConfig,
         ...others
       } = props.gridOptions;
-      return others;
+      return {
+        ...others,
+        proxyConfig: resolvedProxyConfig.value || proxyConfig || null,
+      };
     });
 
     // 合并数据和配置
     const tableData = computed(() => {
+      if (internalData.value !== null) {
+        return internalData.value;
+      }
       return props.externalData.length > 0
         ? props.externalData
         : props.gridOptions.data || [];
     });
 
-    // 计算总条数
+    const usingProxy = computed(() => !!props.gridOptions.proxyConfig);
+
+    // 计算总条数（非代理模式下由本地数据决定，代理模式下交由 ZxtTable 内部处理）
     const total = computed(() => {
+      if (usingProxy.value) {
+        return 0;
+      }
       return tableData.value.length;
     });
 
@@ -415,12 +466,12 @@ export default defineComponent({
 
     // 暴露方法给父组件
     const getGridRef = () => gridRef.value;
-    const getFormRef = () => formRef.value;
+    const getFormRef = () => searchFormRef.value;
     const getSelectedRows = () => {
       return gridRef.value?.getTableRef()?.getSelectionRows?.() || [];
     };
     const reloadData = (data) => {
-      internalData.value = data;
+      internalData.value = data ?? null;
     };
     const setFormVisible = (visible) => {
       isFormVisible.value = visible;
@@ -453,19 +504,30 @@ export default defineComponent({
       }
     );
 
+    const getElTableRef = () => gridRef.value?.getTableRef?.();
+
     expose({
       getGridRef,
       getFormRef,
+      getElTableRef,
       getSelectedRows,
       reloadData,
       setFormVisible,
       commitProxy,
+      clearSelection: () => getElTableRef()?.clearSelection(),
+      toggleRowSelection: (...args) => getElTableRef()?.toggleRowSelection(...args),
+      toggleAllSelection: () => getElTableRef()?.toggleAllSelection(),
+      toggleRowExpansion: (...args) => getElTableRef()?.toggleRowExpansion(...args),
+      setCurrentRow: (...args) => getElTableRef()?.setCurrentRow(...args),
+      clearSort: () => getElTableRef()?.clearSort(),
+      clearFilter: (...args) => getElTableRef()?.clearFilter(...args),
+      doLayout: () => getElTableRef()?.doLayout(),
+      sort: (...args) => getElTableRef()?.sort(...args),
     });
 
     return {
       attrs,
       gridRef,
-      formRef,
       searchFormRef,
       currentPage,
       pageSize,
@@ -476,6 +538,8 @@ export default defineComponent({
       total,
       isFormVisible,
       searchFormColumns,
+      formFilteredSlots,
+      tableFilteredSlots,
       getIconComponent,
       handleToolbarClick,
       handleActionClick,
@@ -497,6 +561,9 @@ export default defineComponent({
 
 <style scoped>
 .zxt-grid-container {
+  --zxt-primary-color: #fa2314;
+  --zxt-primary-hover: #fb4f43;
+  --zxt-primary-active: #e12012;
   width: 100%;
 }
 
@@ -541,8 +608,8 @@ export default defineComponent({
 /* 查询按钮样式 */
 .btn-search {
   background-color: #fff;
-  border-color: #fa2314;
-  color: #fa2314;
+  border-color: var(--zxt-primary-color);
+  color: var(--zxt-primary-color);
 }
 
 .btn-search:hover,
@@ -553,25 +620,24 @@ export default defineComponent({
 
 .btn-search:hover,
 .btn-search:focus {
-  border-color: #fb4f43;
-  color: #fb4f43;
+  border-color: var(--zxt-primary-hover);
+  color: var(--zxt-primary-hover);
   outline: none;
 }
 
-/* 针对 Element Plus 按钮的 focus 状态进行更强的覆盖 */
 .btn-search.el-button:focus,
 .btn-search.el-button:focus-visible {
   background-color: #fff;
-  border-color: #fb4f43;
-  color: #fb4f43;
+  border-color: var(--zxt-primary-hover);
+  color: var(--zxt-primary-hover);
   outline: none;
 }
 
 .btn-search:active,
 .btn-search.el-button:active {
   background-color: #fff;
-  border-color: #e12012;
-  color: #e12012;
+  border-color: var(--zxt-primary-active);
+  color: var(--zxt-primary-active);
 }
 
 /* 重置按钮样式 */
@@ -587,7 +653,6 @@ export default defineComponent({
   background-color: #fff;
 }
 
-/* 覆盖 Element Plus 的 focus 样式，使其与默认样式一致 */
 .btn-reset:focus,
 .btn-reset.el-button:focus,
 .btn-reset.el-button:focus-visible {
@@ -596,17 +661,16 @@ export default defineComponent({
   outline: none;
 }
 
-/* Hover 样式 - 需要高优先级以覆盖 focus 样式 */
 .btn-reset:hover,
 .btn-reset.el-button:hover {
-  border-color: #fb4f43;
-  color: #fb4f43;
+  border-color: var(--zxt-primary-hover);
+  color: var(--zxt-primary-hover);
 }
 
 .btn-reset:active,
 .btn-reset.el-button:active {
   background-color: #fff;
-  border-color: #e12012;
-  color: #e12012;
+  border-color: var(--zxt-primary-active);
+  color: var(--zxt-primary-active);
 }
 </style>

@@ -54,7 +54,7 @@
 </template>
 
 <script>
-import { defineComponent, ref, computed, provide, onMounted } from "vue";
+import { defineComponent, ref, computed, provide, onMounted, watch } from "vue";
 import { ElTable } from "element-plus";
 import ZxtPagination from "../ZxtPagination/ZxtPagination.vue";
 import ZxtTableColumn from "./ZxtTableColumn.vue";
@@ -112,6 +112,13 @@ export default defineComponent({
     const sortState = ref({ prop: "", order: "" });
     const filtersState = ref({});
 
+    watch(() => props.currentPage, (val) => {
+      currentPage.value = val;
+    });
+    watch(() => props.pageSize, (val) => {
+      pageSize.value = val;
+    });
+
     // 计算容器样式
     const containerStyle = computed(() => {
       if (props.height === "full") {
@@ -161,10 +168,10 @@ export default defineComponent({
     };
 
     // 排序变化
-    const handleSortChange = ({ prop, order }) => {
+    const handleSortChange = ({ column, prop, order }) => {
       sortState.value = { prop, order };
       if (usingProxy.value) loadData();
-      emit("sort-change", { prop, order });
+      emit("sort-change", { column, prop, order });
     };
 
     // 过滤变化（Element Plus 传入对象）
