@@ -1,0 +1,9 @@
+{
+  "version": "v1",
+  "packages": {
+    "zxt-table": {
+      "signature": "777a5144537250e62ecaafb466e138fd",
+      "file": true
+    }
+  }
+}

@@ -1,0 +1,35 @@
+# 源码和开发文件
+src/
+public/
+examples/
+
+# 配置文件
+vite.config.js
+tailwind.config.js
+postcss.config.js
+
+# 开发依赖
+node_modules/
+.vscode/
+.idea/
+
+# 构建和临时文件
+*.log
+.DS_Store
+*.local
+
+# 测试文件
+__tests__/
+test/
+*.spec.js
+*.test.js
+
+# 文档（保留README.md）
+docs/
+
+# Git相关
+.git/
+.gitignore
+
+# 其他
+index.html
