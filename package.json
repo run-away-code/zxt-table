@@ -34,6 +34,13 @@
     "README.md",
     "resolver.js"
   ],
+  "release": {
+    "branches": [
+      "main",
+      "master",
+      { "name": "v*", "channel": "${name}" }
+    ]
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",

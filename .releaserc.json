@@ -1,0 +1,7 @@
+{
+  "branches": [
+    "main",
+    "master",
+    { "name": "v*", "channel": "${name}" }
+  ]
+}
