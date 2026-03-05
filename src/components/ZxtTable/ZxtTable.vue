@@ -92,6 +92,11 @@ export default defineComponent({
       type: Object,
       default: null,
     },
+    // 是否在挂载时自动加载数据（proxy 模式下）
+    autoLoad: {
+      type: Boolean,
+      default: true,
+    },
   },
   emits: [
     "page-change",
@@ -271,7 +276,7 @@ export default defineComponent({
 
     // 初始化加载数据
     onMounted(() => {
-      if (usingProxy.value) {
+      if (usingProxy.value && props.autoLoad) {
         loadData();
       }
     });

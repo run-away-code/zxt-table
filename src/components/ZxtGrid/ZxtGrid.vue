@@ -86,6 +86,7 @@
         :columns="mergedColumns"
         :data="tableData"
         :height="gridOptions.height"
+        :auto-load="false"
         :pageable="gridOptions.pageable !== false"
         :current-page="currentPage"
         :page-size="pageSize"
@@ -125,7 +126,7 @@
 </template>
 
 <script>
-import { defineComponent, ref, computed, watch, useAttrs, useSlots } from "vue";
+import { defineComponent, ref, computed, watch, onMounted, useAttrs, useSlots } from "vue";
 import {
   Plus,
   Delete,
@@ -192,7 +193,9 @@ export default defineComponent({
     const pageSize = ref(10);
     const internalData = ref(null);
     const isFormVisible = ref(props.gridOptions.formMode !== false);
-    const proxyFormData = ref({});
+    const proxyFormData = ref({
+      ...(props.gridOptions.formConfig?.data || {}),
+    });
 
     // 图标组件映射
     const iconMap = {
@@ -406,6 +409,19 @@ export default defineComponent({
       isFormVisible.value = visible;
     };
 
+    // 外部赋值表单数据并触发查询（适用于 URL 参数回填等场景）
+    const setFormData = (data, autoQuery = true) => {
+      const formConfig = props.gridOptions.formConfig;
+      if (formConfig?.data) {
+        Object.assign(formConfig.data, data);
+      }
+      proxyFormData.value = { ...(formConfig?.data || {}), ...data };
+      if (autoQuery && props.gridOptions.proxyConfig) {
+        currentPage.value = 1;
+        gridRef.value?.reload?.({ formData: proxyFormData.value, page: 1 });
+      }
+    };
+
     // commitProxy 方法，模拟 vxe-grid 的 API
     const commitProxy = (type, ...args) => {
       const formData = proxyFormData.value;
@@ -432,6 +448,15 @@ export default defineComponent({
       }
     );
 
+    // 首次加载完全由 ZxtGrid 控制（ZxtTable auto-load 始终为 false）
+    // autoLoad 未配置或为 true：挂载后自动请求，带上 formConfig.data 默认值
+    // autoLoad 为 false：不自动请求，由外部通过 setFormData / commitProxy 触发
+    onMounted(() => {
+      if (props.gridOptions.proxyConfig && props.gridOptions.autoLoad !== false) {
+        gridRef.value?.reload?.({ formData: proxyFormData.value, page: 1 });
+      }
+    });
+
     const getElTableRef = () => gridRef.value?.getTableRef?.();
 
     expose({
@@ -441,6 +466,7 @@ export default defineComponent({
       getSelectedRows,
       reloadData,
       setFormVisible,
+      setFormData,
       commitProxy,
       clearSelection: () => getElTableRef()?.clearSelection(),
       toggleRowSelection: (...args) => getElTableRef()?.toggleRowSelection(...args),

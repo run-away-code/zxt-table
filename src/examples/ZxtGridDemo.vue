@@ -22,11 +22,18 @@
 </template>
 
 <script setup>
-import { ref, reactive } from "vue";
+import { ref, reactive, onMounted } from "vue";
 import { ElMessage } from "element-plus";
 import ZxtGrid from "../components/ZxtGrid/ZxtGrid.vue";
 
 const gridRef = ref(null);
+
+onMounted(() => {
+  // 模拟从 URL 获取参数后赋值到表单，并自动触发查询
+  // 例如访问 ?status=1 时，表单会自动选中"启用"并按此条件请求接口
+
+    gridRef.value?.setFormData({ status: 1 });
+})
 
 // 简单静态数据（供模拟接口返回）
 const gridData = [
@@ -101,9 +108,9 @@ const gridOptions = reactive({
   id: "standalone-grid",
   border: true,
   stripe: true,
-
   // 表格高度：full，配合外层 flex，让内容自动撑满
   height: "full",
+  autoLoad: false,
 
   // 工具栏
   toolbar: {
