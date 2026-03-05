@@ -181,8 +181,8 @@ export default defineComponent({
       emit("filter-change", filtersState.value);
     };
 
-    // 服务端数据加载
-    const loadData = async () => {
+    // 服务端数据加载，overrides 可选传入 { formData, page, pageSize } 绕过 prop 时序问题
+    const loadData = async (overrides) => {
       if (!usingProxy.value) return;
       const cfg = props.proxyConfig || {};
       const ajax = cfg.ajax?.query;
@@ -199,14 +199,11 @@ export default defineComponent({
       // 构建 payload，按照 vxe-grid 的格式
       const baseParams = cfg.params || {};
       const payload = {
-        // page 作为对象（类似 vxe-grid）
         [pageField]: {
-          currentPage: currentPage.value,
-          pageSize: pageSize.value
+          currentPage: overrides?.page ?? currentPage.value,
+          pageSize: overrides?.pageSize ?? pageSize.value,
         },
-        // form 数据（从 _formData 中获取）
-        form: cfg._formData || {},
-        // 其他自定义参数（排除 _formData）
+        form: overrides?.formData ?? cfg._formData ?? {},
         ...baseParams,
       };
       
@@ -276,7 +273,7 @@ export default defineComponent({
     // 暴露方法给父组件
     const getTableRef = () => tableRef.value;
     const getSelectedRows = () => tableRef.value?.getSelectionRows?.() || [];
-    const reload = () => loadData();
+    const reload = (overrides) => loadData(overrides);
 
     return {
       tableRef,

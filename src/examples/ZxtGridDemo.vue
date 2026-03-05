@@ -28,7 +28,7 @@ import ZxtGrid from "../components/ZxtGrid/ZxtGrid.vue";
 
 const gridRef = ref(null);
 
-// 简单静态数据
+// 简单静态数据（供模拟接口返回）
 const gridData = [
   {
     id: 1,
@@ -61,6 +61,41 @@ const gridData = [
     joinDate: "2023-07-20",
   },
 ];
+
+// 模拟接口请求：延迟后返回分页数据，并打印每次入参
+function mockListApi(payload) {
+  console.log("[ZxtGrid 请求入参]", payload);
+
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const { page = {}, form = {} } = payload;
+      const currentPage = page.currentPage ?? 1;
+      const pageSize = page.pageSize ?? 10;
+
+      // 简单按表单条件过滤（演示用）
+      let list = [...gridData];
+      if (form.name) {
+        list = list.filter((row) => row.name.includes(form.name));
+      }
+      if (form.status !== "" && form.status !== undefined && form.status !== null) {
+        list = list.filter((row) => row.status === form.status);
+      }
+      if (form.joinRange && Array.isArray(form.joinRange) && form.joinRange.length === 2) {
+        const [start, end] = form.joinRange;
+        list = list.filter((row) => row.joinDate >= start && row.joinDate <= end);
+      }
+
+      const total = list.length;
+      const start = (currentPage - 1) * pageSize;
+      const pageList = list.slice(start, start + pageSize);
+
+      resolve({
+        list: pageList,
+        total,
+      });
+    }, 300);
+  });
+}
 
 const gridOptions = reactive({
   id: "standalone-grid",
@@ -136,6 +171,24 @@ const gridOptions = reactive({
     ],
   },
 
+  // 使用代理模式：模拟接口请求，每次请求会在控制台打印入参
+  proxyConfig: {
+    ajax: {
+      query: mockListApi,
+    },
+    props: {
+      pageField: "page",
+      sizeField: "size",
+      sortField: "sort",
+      orderField: "order",
+      filtersField: "filters",
+    },
+    response: {
+      listField: "list",
+      totalField: "total",
+    },
+  },
+
   // 列配置
   columns: [
     { prop: "id", label: "ID", width: "80", align: "center" },
@@ -179,9 +232,6 @@ const gridOptions = reactive({
       },
     },
   ],
-
-  // 数据
-  data: gridData,
 
   // 分页
   pageable: true,

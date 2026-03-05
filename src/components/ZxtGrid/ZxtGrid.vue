@@ -297,17 +297,12 @@ export default defineComponent({
     };
 
     const handleSearchSubmit = (formData) => {
-      // 统一对外只暴露 submit 事件
       emit("submit", formData);
 
-      // 如果使用了 proxyConfig，自动触发数据加载
       if (props.gridOptions.proxyConfig) {
-        // 将表单数据存储到本地状态，透传给 ZxtTable
         proxyFormData.value = { ...formData };
-
-        // 重置到第一页并重新加载数据
         currentPage.value = 1;
-        gridRef.value?.reload?.();
+        gridRef.value?.reload?.({ formData: proxyFormData.value, page: 1 });
       }
     };
 
@@ -316,17 +311,12 @@ export default defineComponent({
     };
 
     const handleSearchReset = () => {
-      // 统一对外只暴露 reset 事件
       emit("reset");
 
-      // 如果使用了 proxyConfig，清除表单数据并重新加载数据
       if (props.gridOptions.proxyConfig) {
-        // 清除表单数据
         proxyFormData.value = {};
-
-        // 重置到第一页并重新加载数据
         currentPage.value = 1;
-        gridRef.value?.reload?.();
+        gridRef.value?.reload?.({ formData: {}, page: 1 });
       }
     };
 
@@ -479,15 +469,14 @@ export default defineComponent({
 
     // commitProxy 方法，模拟 vxe-grid 的 API
     const commitProxy = (type, ...args) => {
+      const formData = proxyFormData.value;
       switch (type) {
         case 'query':
-          // query: 重置到第一页并重新加载数据
           currentPage.value = 1;
-          gridRef.value?.reload?.();
+          gridRef.value?.reload?.({ formData, page: 1 });
           break;
         case 'reload':
-          // reload: 保持当前页码重新加载数据
-          gridRef.value?.reload?.();
+          gridRef.value?.reload?.({ formData });
           break;
         default:
           console.warn(`[ZxtGrid] commitProxy: unknown type "${type}"`);
