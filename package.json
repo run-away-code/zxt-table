@@ -1,7 +1,7 @@
 {
   "name": "zxt-table",
   "private": false,
-  "version": "0.5.1",
+  "version": "0.5.2",
   "type": "module",
   "description": "一个基于 Vue 3 和 Element Plus 的高级表格、表单组件库",
   "keywords": [

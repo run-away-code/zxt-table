@@ -126,7 +126,6 @@
 
 <script>
 import { defineComponent, ref, computed, watch, useAttrs, useSlots } from "vue";
-import { ElMessage } from "element-plus";
 import {
   Plus,
   Delete,
@@ -382,66 +381,6 @@ export default defineComponent({
     // 处理工具栏按钮点击
     const handleToolbarClick = (code, button) => {
       emit("toolbar-click", { code, button, grid: gridRef.value });
-
-      // 内置操作
-      switch (code) {
-        case "add":
-          handleAdd();
-          break;
-        case "delete":
-          handleDelete();
-          break;
-        case "refresh":
-          handleRefresh();
-          break;
-        case "export":
-          handleExport();
-          break;
-        default:
-          // 自定义操作
-          break;
-      }
-    };
-
-    // 内置操作函数
-    const handleAdd = () => {
-      // 切换到表单模式
-      isFormVisible.value = true;
-    };
-
-    const handleDelete = () => {
-      const selectedRows =
-        gridRef.value?.getTableRef()?.getSelectionRows?.() || [];
-      if (selectedRows.length === 0) {
-        ElMessage.warning("请先选择要删除的数据");
-        return;
-      }
-      ElMessage.success(`删除 ${selectedRows.length} 条数据`);
-    };
-
-    const handleRefresh = () => {
-      ElMessage.success("刷新数据");
-      // 这里可以实现数据刷新逻辑
-      gridRef.value?.reload?.();
-    };
-
-    const handleExport = () => {
-      ElMessage.success("导出数据");
-      // 这里可以实现数据导出逻辑
-    };
-
-    // 表格/表单事件处理
-    const handleSubmit = (formData) => {
-      emit("submit", formData);
-      // 提交成功后是否切回表格？通常由父组件控制，这里先不做自动切换，或者提供一个配置
-    };
-
-    const handleFormReset = () => {
-      emit("reset");
-    };
-
-    const handleFormCancel = () => {
-      isFormVisible.value = false;
     };
 
     const handlePageChange = (params) => {
@@ -532,9 +471,6 @@ export default defineComponent({
       getIconComponent,
       handleToolbarClick,
       handleActionClick,
-      handleSubmit,
-      handleFormReset,
-      handleFormCancel,
       handlePageChange,
       handleSizeChange,
       handleSearch,

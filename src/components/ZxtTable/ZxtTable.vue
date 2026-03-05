@@ -111,6 +111,7 @@ export default defineComponent({
     const innerTotal = ref(0);
     const sortState = ref({ prop: "", order: "" });
     const filtersState = ref({});
+    const latestFormData = ref({});
 
     watch(() => props.currentPage, (val) => {
       currentPage.value = val;
@@ -196,14 +197,19 @@ export default defineComponent({
       const orderField = reqProps.orderField || "order";
       const filtersField = reqProps.filtersField || "filters";
 
-      // 构建 payload，按照 vxe-grid 的格式
+      if (overrides?.formData !== undefined) {
+        latestFormData.value = overrides.formData;
+      } else if (cfg._formData) {
+        latestFormData.value = cfg._formData;
+      }
+
       const baseParams = cfg.params || {};
       const payload = {
         [pageField]: {
           currentPage: overrides?.page ?? currentPage.value,
           pageSize: overrides?.pageSize ?? pageSize.value,
         },
-        form: overrides?.formData ?? cfg._formData ?? {},
+        form: latestFormData.value,
         ...baseParams,
       };
       
