@@ -13,6 +13,21 @@
             {{ row.status === 1 ? "启用" : "禁用" }}
           </el-tag>
         </template>
+
+        <!-- 地址列表头带提示 icon -->
+        <template #addressHeader="{ column }">
+          <span class="address-header">
+            {{ column.label }}
+            <el-tooltip
+              content="详细地址请联系客服"
+              placement="top"
+            >
+              <el-icon class="address-header__icon">
+                <QuestionFilled />
+              </el-icon>
+            </el-tooltip>
+          </span>
+        </template>
       </ZxtGrid>
     </div>
   </div>
@@ -20,6 +35,7 @@
 
 <script setup>
 import { ElMessage } from "element-plus";
+import { QuestionFilled } from "@element-plus/icons-vue";
 import ZxtGrid from "../components/ZxtGrid/ZxtGrid.vue";
 import { useZxtGrid } from "../hooks/useZxtGrid";
 
@@ -94,6 +110,7 @@ const { gridRef, gridOptions, handleToolbarClick, handleActionClick } = useZxtGr
   ],
 
   columns: [
+    { type: "selection", width: "55", align: "center" },
     { prop: "id", label: "ID", width: "80", align: "center" },
     { prop: "name", label: "姓名", width: "120" },
     { prop: "age", label: "年龄", width: "80", align: "center" },
@@ -105,7 +122,7 @@ const { gridRef, gridOptions, handleToolbarClick, handleActionClick } = useZxtGr
       ],
     },
     { prop: "status", label: "状态", width: "80", slot: "status", align: "center" },
-    { prop: "address", label: "地址" },
+    { prop: "address", label: "地址1", headerSlot: "addressHeader" },
     { prop: "joinDate", label: "入职日期", width: "120", align: "center" },
     {
       label: "操作", width: "220", fixed: "right", align: "center",
@@ -160,5 +177,20 @@ const { gridRef, gridOptions, handleToolbarClick, handleActionClick } = useZxtGr
   min-height: 0;
   display: flex;
   flex-direction: column;
+}
+
+.address-header {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.address-header__icon {
+  cursor: pointer;
+  color: #909399;
+}
+
+.address-header__icon:hover {
+  color: #409EFF;
 }
 </style>

@@ -32,6 +32,18 @@
     :key="normalizedColumn.prop"
     :index="normalizedColumn.indexMethod || defaultIndexMethod"
   >
+    <!-- 表头自定义插槽 -->
+    <template
+      #header="scope"
+      v-if="normalizedColumn.headerSlot"
+    >
+      <slot
+        :name="normalizedColumn.headerSlot"
+        :column="normalizedColumn"
+        v-bind="scope"
+      />
+    </template>
+
     <template #default="scope" v-if="!['selection', 'index'].includes(normalizedColumn.type) && (normalizedColumn.type !== 'expand' || normalizedColumn.slot)">
       <!-- 2.1 插槽 (优先级最高) -->
       <template v-if="normalizedColumn.slot">
