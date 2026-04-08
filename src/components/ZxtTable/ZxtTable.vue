@@ -19,15 +19,14 @@
         v-for="(column, index) in columns"
         :key="index"
       >
-        <!-- 使用递归组件 ZxtTableColumn -->
         <ZxtTableColumn
           :column="column"
           :current-page="currentPage"
           :page-size="pageSize"
         >
-          <!-- 透传插槽 -->
           <template
-            v-for="(_, name) in $slots"
+            v-for="(_, name) in columnSlots"
+            :key="name"
             #[name]="slotData"
           >
             <slot
@@ -36,6 +35,20 @@
             />
           </template>
         </ZxtTableColumn>
+      </template>
+
+      <template
+        v-if="$slots.append"
+        #append
+      >
+        <slot name="append" />
+      </template>
+
+      <template
+        v-if="$slots.empty"
+        #empty
+      >
+        <slot name="empty" />
       </template>
     </el-table>
 
@@ -54,10 +67,12 @@
 </template>
 
 <script>
-import { defineComponent, ref, computed, provide, onMounted, watch } from "vue";
+import { defineComponent, ref, computed, provide, onMounted, watch, useSlots } from "vue";
 import { ElTable } from "element-plus";
 import ZxtPagination from "../ZxtPagination/ZxtPagination.vue";
 import ZxtTableColumn from "./ZxtTableColumn.vue";
+
+const TABLE_NATIVE_SLOTS = new Set(["append", "empty"]);
 
 export default defineComponent({
   name: "ZxtTable",
@@ -108,6 +123,7 @@ export default defineComponent({
     "update:row",
   ],
   setup(props, { emit }) {
+    const slots = useSlots();
     const tableRef = ref(null);
     const pageSize = ref(props.pageSize);
     const currentPage = ref(props.currentPage);
@@ -286,7 +302,18 @@ export default defineComponent({
     const getSelectedRows = () => tableRef.value?.getSelectionRows?.() || [];
     const reload = (overrides) => loadData(overrides);
 
+    const columnSlots = computed(() => {
+      const result = {};
+      for (const name in slots) {
+        if (!TABLE_NATIVE_SLOTS.has(name)) {
+          result[name] = slots[name];
+        }
+      }
+      return result;
+    });
+
     return {
+      columnSlots,
       tableRef,
       containerStyle,
       tableHeight,
