@@ -13,7 +13,12 @@
             {{ row.status === 1 ? "启用" : "禁用" }}
           </el-tag>
         </template>
-
+        <!-- 底部合计插槽 -->
+        <template #append>
+          <div class="append-sticky">
+            合计：共 111 条数据
+          </div>
+        </template>
         <!-- 地址列表头带提示 icon -->
         <template #addressHeader="{ column }">
           <span class="address-header">
@@ -45,6 +50,18 @@ const gridData = [
   { id: 1, name: "张伟", age: 28, email: "zhangwei@test.com", phone: "13812345678", status: 1, address: "北京市朝阳区", joinDate: "2023-05-01" },
   { id: 2, name: "李娜", age: 26, email: "lina@test.com", phone: "13987654321", status: 0, address: "上海市浦东新区", joinDate: "2023-06-15" },
   { id: 3, name: "王强", age: 32, email: "wangqiang@test.com", phone: "13700001111", status: 1, address: "广州市天河区", joinDate: "2023-07-20" },
+  { id: 3, name: "王强", age: 32, email: "wangqiang@test.com", phone: "13700001111", status: 1, address: "广州市天河区", joinDate: "2023-07-20" },
+
+  { id: 3, name: "王强", age: 32, email: "wangqiang@test.com", phone: "13700001111", status: 1, address: "广州市天河区", joinDate: "2023-07-20" },
+
+    { id: 3, name: "王强", age: 32, email: "wangqiang@test.com", phone: "13700001111", status: 1, address: "广州市天河区", joinDate: "2023-07-20" },
+    { id: 3, name: "王强", age: 32, email: "wangqiang@test.com", phone: "13700001111", status: 1, address: "广州市天河区", joinDate: "2023-07-20" },
+    { id: 3, name: "王强", age: 32, email: "wangqiang@test.com", phone: "13700001111", status: 1, address: "广州市天河区", joinDate: "2023-07-20" },
+    { id: 3, name: "王强", age: 32, email: "wangqiang@test.com", phone: "13700001111", status: 1, address: "广州市天河区", joinDate: "2023-07-20" },
+    { id: 4, name: "王强", age: 32, email: "wangqiang@test.com", phone: "13700001111", status: 1, address: "广州市天河区", joinDate: "2023-07-20" },
+    { id: 5, name: "王强", age: 32, email: "wangqiang@test.com", phone: "13700001111", status: 1, address: "广州市天河区", joinDate: "2023-07-20" },
+
+
 ];
 
 function mockListApi(payload) {
@@ -192,5 +209,13 @@ const { gridRef, gridOptions, handleToolbarClick, handleActionClick } = useZxtGr
 
 .address-header__icon:hover {
   color: #409EFF;
+}
+
+.append-sticky {
+  padding: 10px 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  background-color: #f8f8f9;
 }
 </style>

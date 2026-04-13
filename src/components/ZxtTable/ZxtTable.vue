@@ -457,4 +457,24 @@ export default defineComponent({
   outline: none;
   box-shadow: none;
 }
+
+/* append 插槽吸底 */
+:deep(.el-table__append-wrapper) {
+  position: relative;
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  background-color: var(--el-bg-color);
+}
+
+/* 吸底后补一条分隔线，避免覆盖表格原边框视觉 */
+:deep(.el-table__append-wrapper::before) {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  border-top: 1px solid var(--el-table-border-color);
+  pointer-events: none;
+}
 </style>
