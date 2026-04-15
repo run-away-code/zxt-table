@@ -38,19 +38,20 @@
       </template>
 
       <template
-        v-if="$slots.append"
-        #append
-      >
-        <slot name="append" />
-      </template>
-
-      <template
         v-if="$slots.empty"
         #empty
       >
         <slot name="empty" />
       </template>
     </el-table>
+
+    <!-- 底部合计 / 汇总区域（独立于 el-table 滚动区域，天然吸底吸左） -->
+    <div
+      v-if="$slots.append"
+      class="zxt-table-footer"
+    >
+      <slot name="append" />
+    </div>
 
     <!-- 分页组件 -->
     <ZxtPagination
@@ -67,7 +68,7 @@
 </template>
 
 <script>
-import { defineComponent, ref, computed, provide, onMounted, watch, useSlots } from "vue";
+import { defineComponent, ref, computed, provide, onMounted, watch, nextTick, useSlots } from "vue";
 import { ElTable } from "element-plus";
 import ZxtPagination from "../ZxtPagination/ZxtPagination.vue";
 import ZxtTableColumn from "./ZxtTableColumn.vue";
@@ -169,6 +170,22 @@ export default defineComponent({
       usingProxy.value ? innerData.value : props.data
     );
 
+    const scrollToTop = () => {
+      nextTick(() => {
+        const wrap = tableRef.value?.$el?.querySelector(
+          '.el-table__body-wrapper .el-scrollbar__wrap'
+        );
+        if (wrap) {
+          if (typeof wrap.scrollTo === "function") {
+            wrap.scrollTo({ top: 0, left: 0 });
+          } else {
+            wrap.scrollTop = 0;
+            wrap.scrollLeft = 0;
+          }
+        }
+      });
+    };
+
     // 处理每页条数变化
     const handleSizeChange = (params) => {
       if (usingProxy.value) {
@@ -176,6 +193,7 @@ export default defineComponent({
         pageSize.value = params.size;
         loadData();
       }
+      scrollToTop();
       emit("size-change", params);
     };
 
@@ -186,6 +204,7 @@ export default defineComponent({
         pageSize.value = params.size;
         loadData();
       }
+      scrollToTop();
       emit("page-change", params);
     };
 
@@ -301,6 +320,7 @@ export default defineComponent({
     const getTableRef = () => tableRef.value;
     const getSelectedRows = () => tableRef.value?.getSelectionRows?.() || [];
     const reload = (overrides) => loadData(overrides);
+    const resetScrollTop = () => scrollToTop();
 
     const columnSlots = computed(() => {
       const result = {};
@@ -332,6 +352,7 @@ export default defineComponent({
       reload,
       getSelectedRows,
       updateRow,
+      resetScrollTop,
     };
   },
 });
@@ -458,23 +479,9 @@ export default defineComponent({
   box-shadow: none;
 }
 
-/* append 插槽吸底 */
-:deep(.el-table__append-wrapper) {
-  position: relative;
-  position: sticky;
-  bottom: 0;
-  z-index: 2;
-  background-color: var(--el-bg-color);
-}
-
-/* 吸底后补一条分隔线，避免覆盖表格原边框视觉 */
-:deep(.el-table__append-wrapper::before) {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  border-top: 1px solid var(--el-table-border-color);
-  pointer-events: none;
+/* 表格底部汇总区域（渲染在 el-table 外部，天然不受水平滚动影响） */
+.zxt-table-footer {
+  flex-shrink: 0;
+  border-top: 1px solid var(--el-table-border-color, #ebeef5);
 }
 </style>
