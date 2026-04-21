@@ -51,6 +51,14 @@
 <script>
 import { defineComponent, computed } from "vue";
 import {
+  ElButton,
+  ElDropdown,
+  ElDropdownItem,
+  ElDropdownMenu,
+  ElIcon,
+} from "element-plus";
+
+import {
   ArrowDown,
   Plus,
   Delete,
@@ -94,7 +102,14 @@ const iconMap = {
 
 export default defineComponent({
   name: "ActionColumn",
-  components: { ArrowDown },
+  components: {
+    ElButton,
+    ElDropdown,
+    ElDropdownItem,
+    ElDropdownMenu,
+    ElIcon,
+    ArrowDown,
+  },
   props: {
     buttons: {
       type: Array,
@@ -134,12 +149,6 @@ export default defineComponent({
         ? resolvedButtons.value.slice(props.maxVisible)
         : []
     );
-
-    console.log("[ActionColumn][5] props.buttons =", props.buttons);
-    console.log("[ActionColumn][5] row =", props.row);
-    console.log("[ActionColumn][5] resolvedButtons =", resolvedButtons.value);
-    console.log("[ActionColumn][5] visibleButtons =", visibleButtons.value);
-    console.log("[ActionColumn][5] overflowButtons =", overflowButtons.value);
 
     const getIconComponent = (iconName) => {
       if (!iconName) return undefined;

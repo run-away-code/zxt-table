@@ -332,12 +332,6 @@ export default defineComponent({
       return result;
     });
 
-    console.log("[ZxtTable][4] props.columns =", props.columns);
-    console.log(
-      "[ZxtTable][4] has zxtActionInternal slot col =",
-      (props.columns || []).some((c) => c?.slot === "zxtActionInternal")
-    );
-
     return {
       columnSlots,
       tableRef,
