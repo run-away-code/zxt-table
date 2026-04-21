@@ -14,6 +14,9 @@ importers:
       vue-router:
         specifier: ^4.6.4
         version: 4.6.4(vue@3.5.25(typescript@5.9.3))
+      zxt-table:
+        specifier: file:/Users/yangbo/Desktop/vxeTable/zxt-table-0.5.9.tgz
+        version: file:zxt-table-0.5.9.tgz(element-plus@2.12.0(vue@3.5.25(typescript@5.9.3)))(vue@3.5.25(typescript@5.9.3))
     devDependencies:
       '@vitejs/plugin-vue':
         specifier: ^6.0.1
@@ -1104,6 +1107,13 @@ packages:
   yallist@4.0.0:
     resolution: {integrity: sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==}
 
+  zxt-table@file:zxt-table-0.5.9.tgz:
+    resolution: {integrity: sha512-uKKTp42mqt2XQ5Tm+xNPod+c7bEV/FZ0BknzkeOPTA3kR/V7RU3zz5H63wypV6Kr2OScXmmHI0KlB8XaNbE5wA==, tarball: file:zxt-table-0.5.9.tgz}
+    version: 0.5.9
+    peerDependencies:
+      element-plus: ^2.0.0
+      vue: ^3.2.0
+
 snapshots:
 
   '@babel/code-frame@7.27.1':
@@ -2128,3 +2138,10 @@ snapshots:
   yallist@3.1.1: {}
 
   yallist@4.0.0: {}
+
+  zxt-table@file:zxt-table-0.5.9.tgz(element-plus@2.12.0(vue@3.5.25(typescript@5.9.3)))(vue@3.5.25(typescript@5.9.3)):
+    dependencies:
+      '@element-plus/icons-vue': 2.3.2(vue@3.5.25(typescript@5.9.3))
+      element-plus: 2.12.0(vue@3.5.25(typescript@5.9.3))
+      vue: 3.5.25(typescript@5.9.3)
+      vue-router: 4.6.4(vue@3.5.25(typescript@5.9.3))

@@ -984,6 +984,71 @@ actionColumn: {
 }
 ```
 
+### 8.8 npm 发版前 Smoke Case（操作列最小回归）
+
+用于验证“打包后操作列是否可用”的最小闭环。建议每次 `npm run build` / `npm pack` 后固定执行一次。
+
+```vue
+<script setup>
+import { ElMessage } from "element-plus";
+import { useZxtGrid } from "@/hooks/useZxtGrid";
+
+const mockListApi = async () => ({
+  list: [
+    { id: 1, name: "张伟", status: 1 },
+    { id: 2, name: "李娜", status: 0 },
+  ],
+  total: 2,
+});
+
+const { gridRef, gridOptions, handleActionClick } = useZxtGrid({
+  id: "smoke-action-column",
+  fetchApi: mockListApi,
+  columns: [
+    { prop: "id", label: "ID", width: "80" },
+    { prop: "name", label: "姓名", width: "120" },
+    {
+      label: "操作",
+      width: "220",
+      fixed: "right",
+      actionColumn: {
+        maxVisible: 2,
+        buttons: [
+          { label: "编辑", code: "edit", type: "primary" },
+          { label: "删除", code: "delete", type: "danger" },
+          { label: "查看", code: "view" },
+          { label: "复制", code: "copy", visible: (row) => row.status === 1 },
+        ],
+      },
+    },
+  ],
+  actionHandlers: {
+    edit: ({ row }) => ElMessage.success(`edit-${row.id}`),
+    delete: ({ row }) => ElMessage.warning(`delete-${row.id}`),
+    view: ({ row }) => ElMessage.info(`view-${row.id}`),
+    copy: ({ row }) => ElMessage.info(`copy-${row.id}`),
+  },
+});
+</script>
+
+<template>
+  <ZxtGrid
+    ref="gridRef"
+    :grid-options="gridOptions"
+    row-key="id"
+    @action-click="handleActionClick"
+  />
+</template>
+```
+
+验收只看 3 件事：
+
+1. **操作列出现**：每行能看到“操作”列，不是空白列。
+2. **平铺 + 更多正常**：`maxVisible: 2` 时，前 2 个按钮直出，其余进入「更多」下拉。
+3. **事件透传正确**：点击任意按钮后，`action-click` 能拿到正确的 `code` 和当前行 `row`。
+
+> 注意：`buttons` 建议使用 `label` 字段作为按钮文案；`visible(row)` 用于按行动态控制显示。
+
 ---
 
 ## 9. 常见问题 (FAQ)

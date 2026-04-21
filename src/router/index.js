@@ -23,6 +23,12 @@ const routes = [
     component: () => import("../examples/ZxtGridDemo.vue"),
     meta: { title: "ZxtGrid 独立 Demo" },
   },
+  {
+    path: "/zxt-pack",
+    name: "ZxtPack",
+    component: () => import("../examples/ZxtPack.vue"),
+    meta: { title: "ZxtPack 打包示例" },
+  },
 ];
 
 const router = createRouter({

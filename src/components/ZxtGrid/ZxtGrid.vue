@@ -213,6 +213,7 @@ export default defineComponent({
     // 操作列配置：从 columns 中提取 actionColumn
     const actionColumnConfig = computed(() => {
       const cols = props.gridOptions.columns || [];
+      console.log("cols", props.gridOptions.columns);
       const actionCol = cols.find((col) => col.actionColumn);
       return actionCol ? actionCol.actionColumn : null;
     });

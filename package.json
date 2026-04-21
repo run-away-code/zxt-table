@@ -1,7 +1,7 @@
 {
   "name": "zxt-table",
   "private": false,
-  "version": "0.5.9",
+  "version": "0.6.0",
   "type": "module",
   "description": "一个基于 Vue 3 和 Element Plus 的高级表格、表单组件库",
   "keywords": [
@@ -38,7 +38,10 @@
     "branches": [
       "main",
       "master",
-      { "name": "v*", "channel": "${name}" }
+      {
+        "name": "v*",
+        "channel": "${name}"
+      }
     ]
   },
   "scripts": {
@@ -64,6 +67,7 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.2",
-    "vue-router": "^4.6.4"
+    "vue-router": "^4.6.4",
+    "zxt-table": "file:/Users/yangbo/Desktop/vxeTable/zxt-table-0.5.9.tgz"
   }
 }

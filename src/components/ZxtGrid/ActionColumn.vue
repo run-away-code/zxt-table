@@ -4,11 +4,13 @@
     <el-button
       v-for="btn in visibleButtons"
       :key="btn.code"
+      class="action-btn"
       :type="btn.type || ''"
       :icon="getIconComponent(btn.icon)"
       size="small"
       link
-      @click="handleClick(btn)"
+      @mousedown.prevent
+      @click="handleClick(btn, $event)"
     >
       {{ btn.label }}
     </el-button>
@@ -20,9 +22,12 @@
       @command="handleCommand"
     >
       <el-button
+        class="action-btn"
         type=""
         size="small"
         link
+        @mousedown.prevent
+        @click="handleTriggerClick"
       >
         更多
         <el-icon class="el-icon--right"><ArrowDown /></el-icon>
@@ -137,12 +142,21 @@ export default defineComponent({
       return iconMap[iconName];
     };
 
-    const handleClick = (btn) => {
+    const blurButton = (event) => {
+      event?.currentTarget?.blur?.();
+    };
+
+    const handleClick = (btn, event) => {
+      blurButton(event);
       emit("action-click", { code: btn.code, button: btn, row: props.row });
     };
 
     const handleCommand = (btn) => {
       emit("action-click", { code: btn.code, button: btn, row: props.row });
+    };
+
+    const handleTriggerClick = (event) => {
+      blurButton(event);
     };
 
     return {
@@ -151,6 +165,7 @@ export default defineComponent({
       getIconComponent,
       handleClick,
       handleCommand,
+      handleTriggerClick,
     };
   },
 });
@@ -162,5 +177,16 @@ export default defineComponent({
   align-items: center;
   gap: 4px;
   flex-wrap: nowrap;
+}
+
+/* 操作列按钮点击/聚焦后不显示边框或高亮轮廓 */
+:deep(.action-column .action-btn.el-button:focus),
+:deep(.action-column .action-btn.el-button:focus-visible),
+:deep(.action-column .action-btn.el-button:active),
+:deep(.action-column .action-btn:focus),
+:deep(.action-column .action-btn:focus-visible),
+:deep(.action-column .action-btn:active) {
+  outline: none;
+  box-shadow: none;
 }
 </style>
