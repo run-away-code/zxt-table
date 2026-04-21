@@ -135,6 +135,12 @@ export default defineComponent({
         : []
     );
 
+    console.log("[ActionColumn][5] props.buttons =", props.buttons);
+    console.log("[ActionColumn][5] row =", props.row);
+    console.log("[ActionColumn][5] resolvedButtons =", resolvedButtons.value);
+    console.log("[ActionColumn][5] visibleButtons =", visibleButtons.value);
+    console.log("[ActionColumn][5] overflowButtons =", overflowButtons.value);
+
     const getIconComponent = (iconName) => {
       if (!iconName) return undefined;
       if (typeof iconName === "object" || typeof iconName === "function")

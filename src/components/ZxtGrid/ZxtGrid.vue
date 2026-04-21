@@ -233,6 +233,24 @@ export default defineComponent({
       });
     });
 
+    console.log("[ZxtGrid][1] source columns =", props.gridOptions.columns);
+    console.log(
+      "[ZxtGrid][1] source action col =",
+      (props.gridOptions.columns || []).find((c) => c?.actionColumn)
+    );
+    console.log("[ZxtGrid][2] mergedColumns =", mergedColumns.value);
+    console.log(
+      "[ZxtGrid][2] merged action slot col =",
+      mergedColumns.value.find((c) => c?.slot === "__action__")
+    );
+    console.log("[ZxtGrid][3] actionColumnConfig =", actionColumnConfig.value);
+    console.log(
+      "[ZxtGrid][3] buttons =",
+      actionColumnConfig.value?.buttons,
+      "len=",
+      actionColumnConfig.value?.buttons?.length
+    );
+
     // 操作列按钮点击
     const handleActionClick = (payload) => {
       emit("action-click", payload);
