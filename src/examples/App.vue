@@ -11,7 +11,7 @@
           <el-menu-item index="/zxt-table">ZxtTable 基础表格</el-menu-item>
           <el-menu-item index="/zxt-grid">ZxtGrid 可配置表格</el-menu-item>
           <el-menu-item index="/zxt-grid-demo">ZxtGrid 独立 Demo</el-menu-item>
-          <el-menu-item index="/zxt-pack">ZxtPack 打包示例</el-menu-item>
+          <!-- <el-menu-item index="/zxt-pack">ZxtPack 打包示例</el-menu-item> -->
         </el-menu>
       </div>
 
