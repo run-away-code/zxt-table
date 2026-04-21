@@ -99,7 +99,7 @@
         <!-- 操作列自动渲染 -->
         <template
           v-if="actionColumnConfig"
-          #__action__="{ row }"
+          #zxtActionInternal="{ row }"
         >
           <ActionColumn
             :buttons="actionColumnConfig.buttons"
@@ -225,7 +225,7 @@ export default defineComponent({
         if (col.actionColumn) {
           return {
             ...col,
-            slot: "__action__",
+            slot: "zxtActionInternal",
             actionColumn: undefined,
           };
         }
@@ -241,7 +241,7 @@ export default defineComponent({
     console.log("[ZxtGrid][2] mergedColumns =", mergedColumns.value);
     console.log(
       "[ZxtGrid][2] merged action slot col =",
-      mergedColumns.value.find((c) => c?.slot === "__action__")
+      mergedColumns.value.find((c) => c?.slot === "zxtActionInternal")
     );
     console.log("[ZxtGrid][3] actionColumnConfig =", actionColumnConfig.value);
     console.log(
