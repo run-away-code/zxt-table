@@ -62,7 +62,7 @@
         >
           <el-button
             :type="btn.type || 'default'"
-            :size="btn.size || 'small'"
+            :size="btn.size || 'default'"
             :icon="getIconComponent(btn.icon)"
             :disabled="btn.disabled"
             @click="handleToolbarClick(btn.code, btn)"
@@ -105,6 +105,7 @@
             :buttons="actionColumnConfig.buttons"
             :row="row"
             :max-visible="actionColumnConfig.maxVisible || 2"
+            :more-type="actionColumnConfig.moreType"
             @action-click="handleActionClick"
           />
         </template>

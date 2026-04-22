@@ -25,7 +25,7 @@
       <el-button
         ref="moreTriggerRef"
         class="action-btn zxt-grid-action-more"
-        type=""
+        :type="moreType || ''"
         size="small"
         link
         @mousedown.prevent
@@ -124,6 +124,11 @@ export default defineComponent({
     maxVisible: {
       type: Number,
       default: 2,
+    },
+    /** 与 ButtonConfig.type 一致，控制「更多」链接按钮主题色；不传为默认灰色 */
+    moreType: {
+      type: String,
+      default: "",
     },
   },
   emits: ["action-click"],

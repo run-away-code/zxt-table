@@ -92,7 +92,7 @@ ZxtGrid
 | code | 按钮标识码 | `String` | — |
 | name | 按钮文字 | `String` | — |
 | type | 按钮类型 | `"primary" \| "danger" \| "success" \| "default"` | `"default"` |
-| size | 按钮尺寸 | `"small" \| "default" \| "large"` | `"small"` |
+| size | 按钮尺寸 | `"small" \| "default" \| "large"` | `"default"` |
 | icon | 图标名称（Element Plus 内置图标） | `String` | — |
 | disabled | 是否禁用 | `Boolean` | `false` |
 
@@ -255,6 +255,7 @@ if (按钮总数 <= maxVisible) {
 | :--- | :--- | :--- | :--- |
 | buttons | 按钮配置列表 | `Array<ButtonConfig>` | `[]` |
 | maxVisible | 最大平铺显示数量，超出部分折叠到「更多」 | `Number` | `2` |
+| moreType | 「更多」触发按钮的颜色类型，与 `ButtonConfig.type` 取值一致（`link` 样式） | `"primary" \| "success" \| "warning" \| "danger" \| "info" \| ""` | `""` |
 
 ### 3.4 ButtonConfig 按钮数据结构
 
@@ -280,6 +281,7 @@ if (按钮总数 <= maxVisible) {
   align: "center",
   actionColumn: {
     maxVisible: 2,
+    moreType: "primary", // 可选：「更多」使用主题色，不传则为默认灰色
     buttons: [
       { label: "编辑", type: "primary", icon: "Edit", code: "edit" },
       { label: "删除", type: "danger", icon: "Delete", code: "delete" },

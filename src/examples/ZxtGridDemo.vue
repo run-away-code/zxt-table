@@ -157,6 +157,7 @@ const { gridRef, gridOptions, handleToolbarClick, handleActionClick } = useZxtGr
       label: "操作", width: "220", fixed: "right", align: "center",
       actionColumn: {
         maxVisible: 2,
+        moreType: "primary", // 或 success / warning / danger / info；不传或 "" 为默认灰
         buttons: [
           { label: "详情", type: "primary", code: "edit" },
           { label: "删除", type: "danger", code: "delete" },
